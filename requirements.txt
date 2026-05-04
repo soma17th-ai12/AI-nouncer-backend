@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+python-multipart
+openai
+jamo
+pydantic-settings
+python-dotenv
+pytest
