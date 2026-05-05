@@ -1,9 +1,7 @@
-# Environment — 실제 키가 들어있는 .env 는 절대 커밋 금지
 .env
 .env.example
 !.env.example
 
-# Claude Code — 개인용 settings 만 ignore (팀 공유 settings.json 은 커밋함)
 .claude/settings.local.json
 
 # Python
