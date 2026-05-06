@@ -34,6 +34,11 @@ uvicorn app.main:app --reload --port 8000
 | GET | `/healthz` | — | `{"status": "ok"}` |
 | GET | `/api/v1/sentences` | — | `[{id, text}]` |
 | POST | `/api/v1/analyze` | multipart: `audio` (file), `sentence_id` (str) | `{transcript, alignment, candidates, advice}` |
+| POST | `/api/v1/analyze/free` | multipart: `audio` (file), `sentence_text` (str) | `{transcript, alignment, candidates, advice}` |
+
+`/api/v1/analyze` 는 미리 정의된 문장 풀(`sentence_id`)에 대해 평가합니다.
+`/api/v1/analyze/free` 는 임의의 한국어 문장(`sentence_text`)을 받아 같은 형식으로 평가합니다.
+응답 스키마는 두 엔드포인트가 동일합니다.
 
 응답 예시:
 
@@ -60,10 +65,15 @@ uvicorn app.main:app --reload --port 8000
 # 문장 풀 조회
 curl -s http://localhost:8000/api/v1/sentences
 
-# 음성 분석
+# 미리 정의된 문장으로 분석
 curl -s -X POST http://localhost:8000/api/v1/analyze \
   -F "audio=@sample.webm;type=audio/webm" \
   -F "sentence_id=s1"
+
+# 임의 문장으로 분석
+curl -s -X POST http://localhost:8000/api/v1/analyze/free \
+  -F "audio=@sample.webm;type=audio/webm" \
+  -F "sentence_text=삼촌은 신선한 생선을 사셨다"
 ```
 
 ## 개발
@@ -85,7 +95,7 @@ pytest -v --tb=short
 │   ├── config.py            # 환경변수 로드 (pydantic-settings)
 │   ├── routers/
 │   │   ├── sentences.py     # GET /api/v1/sentences
-│   │   └── analyze.py       # POST /api/v1/analyze
+│   │   └── analyze.py       # POST /api/v1/analyze, /analyze/free
 │   ├── services/
 │   │   ├── stt.py           # Whisper API 래퍼
 │   │   ├── aligner.py       # 자모 분해 + Needleman-Wunsch 음절 정렬
