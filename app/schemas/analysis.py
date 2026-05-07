@@ -14,6 +14,7 @@ class Candidate(BaseModel):
 class Advice(BaseModel):
     focus: str
     drills: list[str]
+    next_sentence: str | None = None
 
 class AnalysisResponse(BaseModel):
     """POST /api/v1/analyze 응답 스키마."""
