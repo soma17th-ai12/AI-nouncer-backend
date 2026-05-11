@@ -6,3 +6,5 @@ jamo
 pydantic-settings
 python-dotenv
 pytest
+pydub
+imageio-ffmpeg

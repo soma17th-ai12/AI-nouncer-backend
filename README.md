@@ -35,10 +35,30 @@ uvicorn app.main:app --reload --port 8000
 | GET | `/api/v1/sentences` | — | `[{id, text}]` |
 | POST | `/api/v1/analyze` | multipart: `audio` (file), `sentence_id` (str) | `{transcript, alignment, candidates, advice}` |
 | POST | `/api/v1/analyze/free` | multipart: `audio` (file), `sentence_text` (str) | `{transcript, alignment, candidates, advice}` |
+| POST | `/api/v1/analyze/full` | multipart: `audio` (file), `sentence_id` (str) | 위와 동일 |
+| POST | `/api/v1/analyze/preprocess` | multipart: `audio` (file), `sentence_id` (str) | 위와 동일 |
+| POST | `/api/v1/analyze/prompt` | multipart: `audio` (file), `sentence_id` (str) | 위와 동일 |
+| POST | `/api/v1/analyze/silence-only` | multipart: `audio` (file), `sentence_id` (str) | 위와 동일 |
 
 `/api/v1/analyze` 는 미리 정의된 문장 풀(`sentence_id`)에 대해 평가합니다.
 `/api/v1/analyze/free` 는 임의의 한국어 문장(`sentence_text`)을 받아 같은 형식으로 평가합니다.
-응답 스키마는 두 엔드포인트가 동일합니다.
+응답 스키마는 모든 엔드포인트가 동일합니다.
+
+### STT 전처리 옵션 비교
+
+같은 음성으로 아래 다섯 경로를 호출하면 STT 옵션 조합별 transcript / candidates 차이를 직접 비교할 수 있습니다.
+
+| 엔드포인트 | Whisper prompt | 노이즈 컷 (highpass/lowpass) | 무음 제거 |
+|---|---|---|---|
+| `/api/v1/analyze` | — | — | — |
+| `/api/v1/analyze/silence-only` | — | — | ✅ |
+| `/api/v1/analyze/preprocess` | — | ✅ | ✅ |
+| `/api/v1/analyze/prompt` | ✅ | — | — |
+| `/api/v1/analyze/full` | ✅ | ✅ | ✅ |
+
+- Whisper `prompt` 에는 정답 문장의 어휘가 포함되지 않습니다. 도메인 중립 힌트 한 문장만 전달해 발음 평가가 무력화되지 않도록 합니다.
+- 노이즈 컷·무음 제거는 백엔드에서 `pydub` 으로 메모리 상에서만 수행합니다.
+- 오디오 디코딩은 별도 시스템 ffmpeg 설치 없이 `imageio-ffmpeg` pip 패키지가 번들하는 바이너리를 사용합니다.
 
 응답 예시:
 
