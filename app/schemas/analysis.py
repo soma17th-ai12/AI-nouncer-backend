@@ -14,6 +14,7 @@ class Candidate(BaseModel):
 class Advice(BaseModel):
     focus: str
     drills: list[str]
+    practice_words: list[str] | None = None
     next_sentence: str | None = None
 
 class AnalysisResponse(BaseModel):
